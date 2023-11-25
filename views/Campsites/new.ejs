@@ -2,31 +2,31 @@
     <div class="row">
         <h1 class="text-center">New Campground</h1>
         <div class="col-6 offset-3">
-            <form action="/campsites" method="POST">
+            <form action="/campsites" method="POST" class="Validated-form" novalidate>
                 <div class="mb-3">
                     <label for="title" class="form-label">Title</label>
-                    <input type="text" class="form-control" id="title" name="CampSite[title]">
+                    <input type="text" class="form-control" id="title" name="CampSite[title]" required="required">
                 </div>
                 <div class="mb-3">
                     <label for="location" class="form-label">Location</label>
-                    <input type="text" class="form-control" id="location" name="CampSite[location]">
+                    <input type="text" class="form-control" id="location" name="CampSite[location]" required>
                 </div>
                 <div class="mb-3">
                     <label for="image" class="form-label">Image URL</label>
-                    <input type="text" class="form-control" id="image" name="CampSite[image]">
+                    <input type="text" class="form-control" id="image" name="CampSite[image]" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="price">Price</label>
                     <div class="input-group">
                         <span class="input-group-text" id="price-label">$</span>
                         <input type="text" class="form-control" id="price" placeholder="0.00" aria-label="price"
-                            aria-describedby="price-label" name="CampSite[price]">
+                            aria-describedby="price-label" name="CampSite[price]" required>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label for="description" class="form-label">Description</label>
-                    <textarea name="CampSite[description]" class="form-control" id="description" cols="30"
-                        rows="10"></textarea>
+                    <textarea name="CampSite[description]" class="form-control" id="description" cols="30" rows="10"
+                        required></textarea>
                 </div>
                 <button class="btn btn-success">Add CampSites</button>
             </form>

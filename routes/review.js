@@ -3,23 +3,14 @@ const router = express.Router({ mergeParams: true });
 const AsyncWrapper = require('../utilities/AsyncWrapper');
 const Review = require('../models/reviews');
 const CampSites = require('../models/campSites')
-const { ReviewsValidation } = require('../Schema');
+const { ValidateReview, verifyUser, isReviewAuthor } = require('../middleware')
 
-const ValidateReview = (req, res, next) => {
-    const { error } = ReviewsValidation.validate(req.body);
-    if (error) {
-        const msg = error.details.map(er => er.message).join(',');
-        throw new ExpressError(msg, 400);
-    }
-    else {
-        next();
-    }
-}
 
-router.post('/', ValidateReview, AsyncWrapper(async (req, res) => {
+router.post('/', verifyUser, ValidateReview, AsyncWrapper(async (req, res) => {
     const { id } = req.params;
     const camp = await CampSites.findById(id);
     const review = new Review(req.body.review);
+    review.author = req.user._id;
     camp.reviews.push(review);
     review.save();
     camp.save();
@@ -27,7 +18,7 @@ router.post('/', ValidateReview, AsyncWrapper(async (req, res) => {
     res.redirect(`/Campsites/${id}`);
 }))
 
-router.delete('/:reviewId', AsyncWrapper(async (req, res) => {
+router.delete('/:reviewId', verifyUser, isReviewAuthor, AsyncWrapper(async (req, res) => {
     const { id, reviewId } = req.params;
     await CampSites.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
     await Review.findByIdAndDelete(reviewId);

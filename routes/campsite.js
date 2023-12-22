@@ -1,22 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const AsyncWrapper = require('../utilities/AsyncWrapper');
-const ExpressError = require('../utilities/ExpressError');
 const CampSites = require('../models/campSites')
-const { CampsiteValidation } = require('../Schema');
-const { verifyUser } = require('../middleware');
-
-
-const ValidateCampsite = (req, res, next) => {
-    const { error } = CampsiteValidation.validate(req.body);
-    if (error) {
-        const msg = error.details.map(er => er.message).join(',');
-        throw new ExpressError(msg, 400);
-    }
-    else {
-        next();
-    }
-}
+const { verifyUser, ValidateCampsite, isAuthor } = require('../middleware');
 
 
 router.get('/', AsyncWrapper(async (req, res) => {
@@ -28,8 +14,9 @@ router.get('/new', verifyUser, (req, res) => {
     res.render('Campsites/new');
 })
 
-router.post('/', ValidateCampsite, verifyUser, AsyncWrapper(async (req, res) => {
+router.post('/', verifyUser, ValidateCampsite, AsyncWrapper(async (req, res) => {
     const camp = new CampSites(req.body.CampSite);
+    camp.author = req.user._id;
     await camp.save();
     req.flash('success', 'Successfully Made a new Camping Site');
     res.redirect(`/campsites/${camp._id}`);
@@ -37,7 +24,12 @@ router.post('/', ValidateCampsite, verifyUser, AsyncWrapper(async (req, res) => 
 
 router.get('/:id', AsyncWrapper(async (req, res) => {
     const { id } = req.params;
-    const camp = await CampSites.findById(id).populate('reviews');
+    const camp = await CampSites.findById(id).populate({
+        path: 'reviews',
+        populate: {
+            path: 'author'
+        }
+    }).populate('author');
     if (!camp) {
         req.flash('error', 'Oops Cannot find the CampSite!!!');
         res.redirect('/campsites');
@@ -45,7 +37,7 @@ router.get('/:id', AsyncWrapper(async (req, res) => {
     res.render('Campsites/show', { camp });
 }));
 
-router.get('/:id/edit', verifyUser, AsyncWrapper(async (req, res) => {
+router.get('/:id/edit', verifyUser, isAuthor, AsyncWrapper(async (req, res) => {
     const { id } = req.params;
     const camp = await CampSites.findById(id);
     if (!camp) {
@@ -55,14 +47,14 @@ router.get('/:id/edit', verifyUser, AsyncWrapper(async (req, res) => {
     res.render('Campsites/edit', { camp });
 }));
 
-router.put('/:id', ValidateCampsite, verifyUser, AsyncWrapper(async (req, res) => {
+router.put('/:id', verifyUser, ValidateCampsite, isAuthor, AsyncWrapper(async (req, res) => {
     const { id } = req.params;
     const camp = await CampSites.findByIdAndUpdate(id, { ...req.body.CampSite });
     req.flash('success', 'Successfully Updated the Camping Site');
     res.redirect(`/campsites/${camp._id}`);
 }));
 
-router.delete('/:id', verifyUser, AsyncWrapper(async (req, res) => {
+router.delete('/:id', verifyUser, isAuthor, AsyncWrapper(async (req, res) => {
     const { id } = req.params;
     await CampSites.findByIdAndDelete(id);
     req.flash('success', 'Successfully Deleted the Camping Site');

@@ -8,7 +8,10 @@ const CampSiteSchema = new Schema({
     price: Number,
     description: String,
     location: String,
-    image: String,
+    image: [{
+        url: String,
+        fileName: String
+    }],
     author: {
         type: Schema.Types.ObjectId,
         ref: 'User'

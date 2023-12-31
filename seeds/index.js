@@ -31,10 +31,6 @@ const seedDB = async () => {
                     {
                         url: 'https://res.cloudinary.com/dv9jav2oc/image/upload/v1703855698/Campsites/oblq1wsrpuwjchfgqcdc.jpg',
                         fileName: 'Campsites/oblq1wsrpuwjchfgqcdc',
-                    },
-                    {
-                        url: 'https://res.cloudinary.com/dv9jav2oc/image/upload/v1703855701/Campsites/ufestgpz09ypsyudnl0z.jpg',
-                        fileName: 'Campsites/ufestgpz09ypsyudnl0z',
                     }
                 ]
             });

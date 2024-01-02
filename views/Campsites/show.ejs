@@ -59,7 +59,7 @@
         </div>
         <!-- Reviews -->
         <div class="col-6">
-            <div id='map' style='width: 100%; height: 300px;'></div>
+            <div id='map'></div>
             <% if(currentUser) {%>
                 <h2>Leave a Review</h2>
                 <form action="/campsites/<%= camp._id %>/reviews" method="POST" class="mb-3 Validated-form" novalidate>

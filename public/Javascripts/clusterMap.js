@@ -1,13 +1,15 @@
 mapboxgl.accessToken = MapToken;
 const map = new mapboxgl.Map({
-    container: 'map',
+    container: 'cluster-map',
     // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
     style: 'mapbox://styles/mapbox/light-v11',
     center: [-103.5917, 40.6699],
     zoom: 3
 });
 
-map.on('load', () => {
+map.addControl(new mapboxgl.NavigationControl());
+
+map.on('load', () => { 
     // Add a new source from our GeoJSON data and
     // set the 'cluster' option to true. GL-JS will
     // add the point_count property to your source data.
